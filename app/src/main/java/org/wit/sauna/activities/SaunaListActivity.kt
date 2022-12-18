@@ -32,17 +32,16 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.navigation.findNavController
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.internal.NavigationMenuView
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.database.*
 import com.squareup.picasso.Picasso
 import org.wit.sauna.R
+import org.wit.sauna.`interface`.MyInterface
 import org.wit.sauna.activities.map.Constants
 import org.wit.sauna.activities.map.MYLocation1
 import org.wit.sauna.activities.map.mapactivitys
@@ -57,7 +56,7 @@ import org.wit.sauna.models.SaunaModel
 import org.wit.sauna.models.setdata
 import org.wit.sauna.utils.Preferences
 
-class SaunaListActivity : AppCompatActivity(), SaunaListener,
+class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
     NavigationView.OnNavigationItemSelectedListener {
 
     lateinit var app: MainApp
@@ -71,10 +70,11 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener,
     var url: String? = null
     var fRef: DatabaseReference? = null
     var ref: DatabaseReference? = null
-
-
     var recyclerView: RecyclerView? = null
+    var rep: String = ""
     var ad: ArrayList<setdata> = ArrayList<setdata>()
+    var myFirebase: DatabaseReference? = null
+
     private var postadapter: getpostdataforcategoriesforuser? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,8 +83,10 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener,
 //        binding = ActivitySaunaListBinding.inflate(layoutInflater)
 //        setContentView(binding.root)
         binding.toolbar.title = title
+        myFirebase = FirebaseDatabase.getInstance().reference
+
         recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-        val rep: String? = Preferences.readString(this@SaunaListActivity, "email")
+        rep = Preferences.readString(this@SaunaListActivity, "email").toString()
         val headerView = binding.navView.getHeaderView(0)
         val headerBinding: NavHeaderMainBinding = NavHeaderMainBinding.bind(headerView)
         ref = FirebaseDatabase.getInstance().reference
@@ -133,6 +135,7 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener,
         app = application as MainApp
         // to load data in recycler according to user email
         val rep2 = rep!!.replace(".", "")
+        postadapter = getpostdataforcategoriesforuser(this@SaunaListActivity, ad,this)
         val cateDataa1 =
             FirebaseDatabase.getInstance().getReference("create").child("post").child(rep2)
         cateDataa1.addValueEventListener(object : ValueEventListener {
@@ -144,7 +147,6 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener,
                         ad.add(petData)
                     }
                 }
-                postadapter = getpostdataforcategoriesforuser(this@SaunaListActivity, ad)
                 recyclerView!!.adapter = postadapter
                 postadapter!!.notifyDataSetChanged()
             }
@@ -171,13 +173,11 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener,
         }
         return super.onOptionsItemSelected(item)
     }
-
     override fun onSaunaClick(sauna: SaunaModel) {
         val launcherIntent = Intent(this, SaunaActivity::class.java)
         launcherIntent.putExtra("sauna_edit", sauna)
         refreshIntentLauncher.launch(launcherIntent)
     }
-
     private fun registerRefreshCallback() {
         refreshIntentLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { binding.recyclerView.adapter?.notifyDataSetChanged() }
@@ -304,19 +304,6 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener,
                         editor.putString("lat", java.lang.Double.toString(location.latitude))
                         editor.putString("lng", java.lang.Double.toString(location.longitude))
                         editor.apply()
-                        // goButton.setVisibility(View.VISIBLE);
-
-                        //                            Log.e("-check","lat:"+Constants.location.getLatitude());
-                        //                            Log.e("-check","lat:"+Constants.location.getLongitude());
-
-                        //                     Intent i = new Intent(getApplicationContext(), AddNewPin.class);
-                        //                     startActivity(i);
-
-                        //  Toast.makeText(SplashActivity.this, "lat"+location.getLatitude(), Toast.LENGTH_SHORT).show();
-                        //  Toast.makeText(SplashActivity.this, "lng: "+location.getLongitude(), Toast.LENGTH_SHORT).show();
-
-                        //  btnStart.setVisibility(View.VISIBLE);
-                        //  progressBarloading.setVisibility(View.INVISIBLE);
                     }
                     //Got the location!
                 } else {
@@ -374,6 +361,28 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener,
             Log.e("UtilsClass", "isNetworkAvailable()::::" + e.message)
         }
         return false
+    }
+
+    override fun click(model: setdata?) {
+        TODO("Not yet implemented")
+    }
+
+// Interface to delete item from recyclerview
+    @SuppressLint("NotifyDataSetChanged")
+    override fun delete(model: setdata?) {
+        val key: String? = model!!.count
+        val a = rep.replace(".", "")
+    //Query to delete data fro, firebase
+        myFirebase!!.child("create").child("post").child(a).child(key!!).removeValue().addOnCompleteListener(
+                OnCompleteListener<Void?> { postadapter!!.notifyDataSetChanged()
+                    Toast.makeText(this, "Removed successfully", Toast.LENGTH_SHORT).show()
+                })
+        myFirebase!!.child("create").child("posts").child("all").child(key).removeValue().addOnCompleteListener(
+                OnCompleteListener<Void?> { postadapter!!.notifyDataSetChanged() })
+    }
+
+    override fun update(model: setdata?) {
+        TODO("Not yet implemented")
     }
 
 

@@ -12,12 +12,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.firestore.FirebaseFirestore
 import org.wit.sauna.R
+import org.wit.sauna.`interface`.MyInterface
 import org.wit.sauna.models.setdata
 
-class getpostdataforcategoriesforuser(context: Context, data: ArrayList<setdata>) :
+class getpostdataforcategoriesforuser(context: Context, data: ArrayList<setdata>, myInterface : MyInterface) :
     RecyclerView.Adapter<getpostdataforcategoriesforuser.myHolder>() {
     var mcontext: Context
     var data: ArrayList<setdata>
+    var interfaces : MyInterface
+
     var name: String? = null
     var fstore: FirebaseFirestore? = null
     var role: String? = null
@@ -25,6 +28,7 @@ class getpostdataforcategoriesforuser(context: Context, data: ArrayList<setdata>
     init {
         this.data = data
         mcontext = context
+        this.interfaces = myInterface
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): myHolder {
@@ -39,8 +43,8 @@ class getpostdataforcategoriesforuser(context: Context, data: ArrayList<setdata>
         Glide.with(holder.postimg1.context).load(data[position].randomkey)
             .into(holder.postimg1)
 
-        holder.title1.text = " " + petDataa.name
-        holder.quan.text = "" + petDataa.description
+        holder.title1.text = "Sauna : " + petDataa.name
+        holder.quan.text = "Description : " + petDataa.description
         holder.cancelorder.setOnClickListener { }
         holder.layout.setOnClickListener { /*                Intent intent = new Intent(mcontext, displayad.class);
                     intent.putExtra("name",petDataa.getName());
@@ -49,6 +53,10 @@ class getpostdataforcategoriesforuser(context: Context, data: ArrayList<setdata>
                     intent.putExtra("pass",petDataa.getPass());
                     intent.putExtra("id",petDataa.getId());
                     mcontext.startActivity(intent);*/
+            holder.deletebtn.setOnClickListener(){
+                interfaces.delete(data.get(position))
+
+            }
         }
     }
 
@@ -61,12 +69,14 @@ class getpostdataforcategoriesforuser(context: Context, data: ArrayList<setdata>
         var cancelorder: TextView
         var quan: TextView
         var title1: TextView
+        lateinit var deletebtn: ImageView
         var location: TextView? = null
         var postimg1: ImageView
         var postimg2: ImageView? = null
         var layout: LinearLayout
 
         init {
+            deletebtn = itemView.findViewById(R.id.delete)
             postimg1 = itemView.findViewById(R.id.img1)
             layout = itemView.findViewById(R.id.itemlinear)
             cancelorder = itemView.findViewById(R.id.cancl)

@@ -9,15 +9,15 @@
     <color name="white">#FFFFFFFF</color>
 
     <color name="colorPrimary">#FFFFFF</color>
-    <color name="colorPrimaryDark">#0B3A83</color>
-    <color name="colorAccent">#0B3A83</color>
+    <color name="colorPrimaryDark">#74A0C1</color>
+    <color name="colorAccent">#74A0C1</color>
     <color name="bright_green">#81EB14</color>
     <color name="lesser_green">#9AEF43</color>
-    <color name="light_200">#0B3A83</color>
-    <color name="light_500">#0B3A83</color>
-    <color name="light_700">#0B3A83</color>
+    <color name="light_200">#74A0C1</color>
+    <color name="light_500">#74A0C1</color>
+    <color name="light_700">#74A0C1</color>
 
-    <color name="dark_200">#213455</color>
+    <color name="dark_200">#74A0C1</color>
     <color name="dark_500">#0F1B30</color>
     <color name="dark_700">#0C1B33</color>
 
@@ -31,10 +31,10 @@
     <color name="appButtonColorDark">#BF1E2E</color>
 
     <color name="homeBtnColorLight">#FFFFFF</color>
-    <color name="homeBtnColorDark">#1A263E</color>
+    <color name="homeBtnColorDark">#74A0C1</color>
 
-    <color name="homeActiveColorLight">#2F5181</color>
-    <color name="homeActiveColorDark">#2F5181</color>
+    <color name="homeActiveColorLight">#74A0C1</color>
+    <color name="homeActiveColorDark">#74A0C1</color>
 
     <color name="ok_color_dark">#039D71</color>
     <color name="cancel_color_dark">#BF1E2E</color>
