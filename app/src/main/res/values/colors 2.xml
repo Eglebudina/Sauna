@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#0B3A83</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <color name="colorPrimary">#FFFFFF</color>
+    <color name="colorPrimaryDark">#0B3A83</color>
+    <color name="colorAccent">#0B3A83</color>
+    <color name="bright_green">#81EB14</color>
+    <color name="lesser_green">#9AEF43</color>
+    <color name="light_200">#0B3A83</color>
+    <color name="light_500">#0B3A83</color>
+    <color name="light_700">#0B3A83</color>
+
+    <color name="dark_200">#213455</color>
+    <color name="dark_500">#0F1B30</color>
+    <color name="dark_700">#0C1B33</color>
+
+    <color name="appColorLight">#FFFFFF</color>
+    <color name="appColorDark">#0F1B30</color>
+
+    <color name="appHintColorLight">#707070</color>
+    <color name="appHintColorDark">#9F9F9F</color>
+
+    <color name="appButtonColorLight">#BF1E2E</color>
+    <color name="appButtonColorDark">#BF1E2E</color>
+
+    <color name="homeBtnColorLight">#FFFFFF</color>
+    <color name="homeBtnColorDark">#1A263E</color>
+
+    <color name="homeActiveColorLight">#2F5181</color>
+    <color name="homeActiveColorDark">#2F5181</color>
+
+    <color name="ok_color_dark">#039D71</color>
+    <color name="cancel_color_dark">#BF1E2E</color>
+    <color name="ok_color_light">#039D71</color>
+    <color name="cancel_color_light">#BF1E2E</color>
+
+    <color name="timerBgLight">#000000</color>
+    <color name="timerBgDark">#000000</color>
+
+    <color name="transparent">#00FFFFFF</color>
+
+    <color name="red">#FF0000</color>
+    <color name="orange">#E1BA2A</color>
+    <color name="green">#098C66</color>
+
+    <color name="main_disable_text_color_dark">#3E5886</color>
+    <color name="main_disable_text_color_light">#3E5886</color>
+
+    <color name="progress_bar_bg">#999999</color>
+
+</resources>

@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Sauna</string>
+    <string name="button_addSauna">Add Sauna</string>
+    <string name="hint_saunaTitle">Sauna Title</string>
+    <string name="hint_saunaDescription">Description </string>
+    <string name="menu_addSauna">Add</string>
+    <string name="menu_cancelSauna">Cancel</string>
+    <string name="enter_sauna_title"> Please enter a Sauna Title </string>
+    <string name="save_sauna"> Save Sauna </string>
+    <string name="button_addImage"> Add Image </string>
+    <string name="select_sauna_image">Select sauna image</string>
+    <string name="change_sauna_image">Change sauna image</string>
+    <string name="button_location">Set Location</string>
+    <string name="title_activity_map">Map</string>
+    <string name="google_maps_key">${MAPS_API_KEY}</string>>
+</resources>

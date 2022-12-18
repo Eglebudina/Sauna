@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "361212027255",
+    "firebase_url": "https://sauna-dcbaa-default-rtdb.firebaseio.com",
+    "project_id": "sauna-dcbaa",
+    "storage_bucket": "sauna-dcbaa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:361212027255:android:a6043bebfc55a4ef6d8172",
+        "android_client_info": {
+          "package_name": "org.wit.sauna"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "361212027255-197ua9hdikc0998llrj9fnld9i09tp5d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5OaR4ZJ_L1i-fN92wBLMPrgLJUe12mio"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "361212027255-197ua9hdikc0998llrj9fnld9i09tp5d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
