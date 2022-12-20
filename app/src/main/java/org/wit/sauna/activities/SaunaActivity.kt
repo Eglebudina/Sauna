@@ -108,14 +108,15 @@ class SaunaActivity : AppCompatActivity() {
         ///save button
         binding.btnAdd.setOnClickListener(View.OnClickListener {
             egle = true
-            val rep: String? = Preferences.readString(this@SaunaActivity, "gmail")
+            val rep: String? = Preferences.readString(this@SaunaActivity, "email")
+            val i = (Random().nextInt(900000) + 100000).toString()
+
             val rep2 = rep!!.replace(".", "")
             val createpost =
-                FirebaseDatabase.getInstance().reference.child("create").child("post").child(rep2)
+                FirebaseDatabase.getInstance().reference.child("create").child("post").child(rep2).child(i);
             Log.i("egleclickcheck", "onClick: $rep2")
             val createpostforalluser =
-                FirebaseDatabase.getInstance().reference.child("create").child("posts").child("all")
-            val i = (Random().nextInt(900000) + 100000).toString()
+                FirebaseDatabase.getInstance().reference.child("create").child("posts").child("all").child(i)
             Log.i("egle", "onCreate: "+rep2)
             if (binding.saunaTitle.text.toString().isNotEmpty() && binding.description.text.toString().isNotEmpty() && selectedImage != null){
              pdd = ProgressDialog(this@SaunaActivity)
@@ -140,8 +141,8 @@ class SaunaActivity : AppCompatActivity() {
                                         binding.description.text.toString(),
                                         i
                                     )
-                                    createpost.push().setValue(pd)
-                                    createpostforalluser.push().setValue(pd)
+                                    createpost.setValue(pd)
+                                    createpostforalluser.setValue(pd)
                                     egle = false
                                 }
                                 msg.text = "Data inserted Successfully"

@@ -3,25 +3,29 @@ package org.wit.sauna.activities
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.app.Dialog
+import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.location.Location
 import android.location.LocationManager
 import android.net.ConnectivityManager
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.PersistableBundle
+import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
-import android.view.Gravity
-import android.view.Menu
-import android.view.MenuItem
-import android.view.View
+import android.view.*
+import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -32,23 +36,29 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.navigation.findNavController
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.OnFailureListener
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.material.internal.NavigationMenuView
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.database.*
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
 import org.wit.sauna.R
+import org.wit.sauna.`interface`.MyInterface
 import org.wit.sauna.activities.map.Constants
 import org.wit.sauna.activities.map.MYLocation1
+import org.wit.sauna.activities.map.MapActivity
 import org.wit.sauna.activities.map.mapactivitys
 import org.wit.sauna.activities.profile.ProfileActivity
 import org.wit.sauna.adapters.SaunaListener
 import org.wit.sauna.adapters.getpostdataforcategoriesforuser
+import org.wit.sauna.databinding.ActivitySaunaBinding
 import org.wit.sauna.databinding.ActivitySaunaListBinding
 import org.wit.sauna.databinding.NavHeaderMainBinding
 import org.wit.sauna.display.displayad
@@ -56,8 +66,11 @@ import org.wit.sauna.main.MainApp
 import org.wit.sauna.models.SaunaModel
 import org.wit.sauna.models.setdata
 import org.wit.sauna.utils.Preferences
+import timber.log.Timber
+import java.io.IOException
+import java.util.*
 
-class SaunaListActivity : AppCompatActivity(), SaunaListener,
+class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
     NavigationView.OnNavigationItemSelectedListener {
 
     lateinit var app: MainApp
@@ -71,10 +84,24 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener,
     var url: String? = null
     var fRef: DatabaseReference? = null
     var ref: DatabaseReference? = null
-
-
     var recyclerView: RecyclerView? = null
+    var rep: String = ""
     var ad: ArrayList<setdata> = ArrayList<setdata>()
+    var myFirebase: DatabaseReference? = null
+    var edit = false
+    var imgShow = false
+    var egle = false
+
+    var sauna = SaunaModel()
+    var bitmap: Bitmap? = null
+    var selectedImage: Uri? = null
+    val PICK_IMAGE = 1
+    var storageReference: StorageReference? = null
+    var pdd: ProgressDialog? = null
+    private lateinit var imageIntentLauncher: ActivityResultLauncher<Intent>
+    private lateinit var mapIntentLauncher: ActivityResultLauncher<Intent>
+    var location = org.wit.sauna.models.Location(52.245696, -7.139102, 15f)
+
     private var postadapter: getpostdataforcategoriesforuser? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -83,8 +110,10 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener,
 //        binding = ActivitySaunaListBinding.inflate(layoutInflater)
 //        setContentView(binding.root)
         binding.toolbar.title = title
+        myFirebase = FirebaseDatabase.getInstance().reference
+
         recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-        val rep: String? = Preferences.readString(this@SaunaListActivity, "email")
+        rep = Preferences.readString(this@SaunaListActivity, "email").toString()
         val headerView = binding.navView.getHeaderView(0)
         val headerBinding: NavHeaderMainBinding = NavHeaderMainBinding.bind(headerView)
         ref = FirebaseDatabase.getInstance().reference
@@ -133,6 +162,7 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener,
         app = application as MainApp
         // to load data in recycler according to user email
         val rep2 = rep!!.replace(".", "")
+        postadapter = getpostdataforcategoriesforuser(this@SaunaListActivity, ad, this)
         val cateDataa1 =
             FirebaseDatabase.getInstance().getReference("create").child("post").child(rep2)
         cateDataa1.addValueEventListener(object : ValueEventListener {
@@ -144,7 +174,6 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener,
                         ad.add(petData)
                     }
                 }
-                postadapter = getpostdataforcategoriesforuser(this@SaunaListActivity, ad)
                 recyclerView!!.adapter = postadapter
                 postadapter!!.notifyDataSetChanged()
             }
@@ -155,6 +184,8 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener,
         })
         registerRefreshCallback()
         checkInternet()
+        registerMapCallback()
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -285,9 +316,25 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener,
             }, 2500)
         }
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         checkGPSStatus()
+        if (requestCode == PICK_IMAGE && resultCode == RESULT_OK && data != null) {
+            selectedImage = data.data
+            try {
+                bitmap = MediaStore.Images.Media.getBitmap(contentResolver, selectedImage)
+                imgShow = true;
+                Toast.makeText(
+                    this@SaunaListActivity,
+                    "Image has been selected",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+
         // checkGPSStatus();
     }
 
@@ -304,19 +351,6 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener,
                         editor.putString("lat", java.lang.Double.toString(location.latitude))
                         editor.putString("lng", java.lang.Double.toString(location.longitude))
                         editor.apply()
-                        // goButton.setVisibility(View.VISIBLE);
-
-                        //                            Log.e("-check","lat:"+Constants.location.getLatitude());
-                        //                            Log.e("-check","lat:"+Constants.location.getLongitude());
-
-                        //                     Intent i = new Intent(getApplicationContext(), AddNewPin.class);
-                        //                     startActivity(i);
-
-                        //  Toast.makeText(SplashActivity.this, "lat"+location.getLatitude(), Toast.LENGTH_SHORT).show();
-                        //  Toast.makeText(SplashActivity.this, "lng: "+location.getLongitude(), Toast.LENGTH_SHORT).show();
-
-                        //  btnStart.setVisibility(View.VISIBLE);
-                        //  progressBarloading.setVisibility(View.INVISIBLE);
                     }
                     //Got the location!
                 } else {
@@ -374,6 +408,191 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener,
             Log.e("UtilsClass", "isNetworkAvailable()::::" + e.message)
         }
         return false
+    }
+
+    override fun click(model: setdata?) {
+        TODO("Not yet implemented")
+    }
+
+    // Interface to delete item from recyclerview
+    @SuppressLint("NotifyDataSetChanged")
+    override fun delete(model: setdata?) {
+        val key: String? = model!!.count
+        val a = rep.replace(".", "")
+        //Query to delete data fro, firebase
+        myFirebase!!.child("create").child("post").child(a).child(key!!).removeValue()
+            .addOnCompleteListener(
+                OnCompleteListener<Void?> {
+                    postadapter!!.notifyDataSetChanged()
+                    Toast.makeText(this, "Removed successfully", Toast.LENGTH_SHORT).show()
+                })
+        myFirebase!!.child("create").child("posts").child("all").child(key).removeValue()
+            .addOnCompleteListener(
+                OnCompleteListener<Void?> { postadapter!!.notifyDataSetChanged() })
+    }
+
+    override fun update(model: setdata?) {
+        var btnAdd: Button
+       var getToPoint : String
+       getToPoint = model!!.count.toString()
+//        btnAdd = view.findViewById(R.id.btnAdd)
+        storageReference = FirebaseStorage.getInstance().reference
+
+        Toast.makeText(this, "work successfully", Toast.LENGTH_SHORT).show()
+        val alert = AlertDialog.Builder(this)
+//        var binding: ActivitySaunaBinding = ActivitySaunaBinding.inflate(layoutInflater)
+        val bind: ActivitySaunaBinding = ActivitySaunaBinding.inflate(LayoutInflater.from(this@SaunaListActivity))
+//        var binding: ActivitySaunaBinding = ActivitySaunaBinding.inflate(LayoutInflater.from(this@SaunaListActivity), R.layout. activity_sauna, null, false)
+
+        setContentView(binding.root)
+   /*     val inflater = LayoutInflater.from(this)
+        val view: View = inflater.inflate(R.layout.activity_sauna, null)*/
+        alert.setView(bind.root)
+        val alertDialog: AlertDialog = alert.create()
+        alertDialog.setCanceledOnTouchOutside(true)
+        if (intent.hasExtra("sauna_edit")) {
+            edit = true
+            sauna = intent.extras?.getParcelable("sauna_edit")!!
+            bind.saunaTitle.setText(sauna.title)
+            bind.description.setText(sauna.description)
+            bind.btnAdd.setText(R.string.save_sauna)
+            Picasso.get()
+                .load(sauna.image)
+                .into(bind.saunaImage)
+            if (sauna.image != Uri.EMPTY) {
+                bind.chooseImage.setText(R.string.change_sauna_image)
+            }
+        }
+
+
+        bind.btnAdd.setOnClickListener(View.OnClickListener {
+            egle = true
+            val rep: String? = Preferences.readString(this@SaunaListActivity, "email")
+            val i = (Random().nextInt(900000) + 100000).toString()
+
+            val rep2 = rep!!.replace(".", "")
+            val createpost =
+                FirebaseDatabase.getInstance().reference.child("create").child("post").child(rep2).child(getToPoint)
+            val createpostforalluser =
+                FirebaseDatabase.getInstance().reference.child("create").child("posts").child("all").child(getToPoint)
+            if (bind.saunaTitle.text.toString()
+                    .isNotEmpty() && bind.description.text.toString()
+                    .isNotEmpty() && selectedImage != null
+            ) {
+                pdd = ProgressDialog(this@SaunaListActivity)
+                pdd!!.setTitle("Uploading Data.......")
+                pdd!!.show()
+                val randomkey = UUID.randomUUID().toString()
+                val ref: StorageReference = storageReference!!.child("image/$randomkey")
+                ref.putFile(selectedImage!!).addOnSuccessListener(OnSuccessListener<Any?> {
+                    ref.downloadUrl.addOnSuccessListener(OnSuccessListener<Uri> { uri ->
+                        createpost.addValueEventListener(object : ValueEventListener {
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                val dialog = Dialog(this@SaunaListActivity)
+                                Objects.requireNonNull(dialog.window)!!
+                                    .setBackgroundDrawableResource(android.R.color.transparent)
+                                dialog.setContentView(R.layout.prompt)
+                                val ok = dialog.findViewById<Button>(R.id.yes)
+                                val msg = dialog.findViewById<TextView>(R.id.textshow)
+                                if (egle) {
+                                    val map = HashMap<String, Any>()
+                                    map["description"] =  bind.description.text.toString()
+                                    map["name"] =  bind.saunaTitle.text.toString()
+                                    map["randomkey"] = uri.toString()
+                                    createpost.updateChildren(map)
+                                    createpostforalluser.updateChildren(map)
+                                    egle = false
+                                }
+                                msg.text = "Data inserted Successfully"
+                                //                                                    egle = true;
+                                ok.setOnClickListener { dialog.dismiss() }
+                                dialog.show()
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {}
+                        })
+                    })
+                    Snackbar.make(
+                        findViewById(android.R.id.content),
+                        "Image Uploaded.",
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                    pdd!!.dismiss()
+                }).addOnFailureListener(OnFailureListener {
+                    val dialog = Dialog(this@SaunaListActivity)
+                    Objects.requireNonNull(dialog.window)
+                        ?.setBackgroundDrawableResource(android.R.color.transparent)
+                    dialog.setContentView(R.layout.prompt)
+                    val ok = dialog.findViewById<Button>(R.id.yes)
+                    val msg = dialog.findViewById<TextView>(R.id.textshow)
+                    msg.text = "Failed to upload"
+                    ok.setOnClickListener { dialog.dismiss() }
+                    dialog.show()
+                    pdd!!.dismiss()
+                }).addOnProgressListener { snapshot ->
+                    val progresspercent: Double =
+                        100.00 * snapshot.bytesTransferred / snapshot.totalByteCount
+                    pdd!!.setMessage("Percentage: " + progresspercent.toInt() + "%")
+                }
+            } else {
+                val dialog = Dialog(this@SaunaListActivity)
+                Objects.requireNonNull(dialog.window)
+                    ?.setBackgroundDrawableResource(android.R.color.transparent)
+                dialog.setContentView(R.layout.prompt)
+                val ok = dialog.findViewById<Button>(R.id.yes)
+                val msg = dialog.findViewById<TextView>(R.id.textshow)
+                msg.text = "Missing fields (text/picture)"
+                ok.setOnClickListener { dialog.dismiss() }
+                dialog.show()
+            }
+        })
+        bind.saunaLocation.setOnClickListener {
+            val location = org.wit.sauna.models.Location(52.245696, -7.139102, 15f)
+            if (sauna.zoom != 0f) {
+                location.lat = sauna.lat
+                location.lng = sauna.lng
+                location.zoom = sauna.zoom
+            }
+            val launcherIntent = Intent(this, MapActivity::class.java)
+                .putExtra("location", location)
+            mapIntentLauncher.launch(launcherIntent)
+        }
+
+        //categoryworkend//
+        bind.chooseImage.setOnClickListener(View.OnClickListener {
+            val i = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+            startActivityForResult(i, PICK_IMAGE)
+        })
+        if (imgShow) {
+            bind.saunaImage.setImageBitmap(bitmap)
+            imgShow = false
+        }
+
+
+
+        alertDialog.show()
+
+    }
+
+    private fun registerMapCallback() {
+        mapIntentLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+            { result ->
+                when (result.resultCode) {
+                    RESULT_OK -> {
+                        if (result.data != null) {
+                            Timber.i("Got Location ${result.data.toString()}")
+                            location = result.data!!.extras?.getParcelable("location")!!
+                            Timber.i("Location == $location")
+                            sauna.lat = location.lat
+                            sauna.lng = location.lng
+                            sauna.zoom = location.zoom
+                        } // end of if
+                    }
+                    RESULT_CANCELED -> {}
+                    else -> {}
+                }
+            }
     }
 
 
