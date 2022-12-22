@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="themedStrokeColor" format="reference" />
+    <attr name="appColor" format="reference" />
+    <attr name="hintColor" format="reference" />
+    <attr name="buttonColor" format="reference" />
+    <attr name="homeInActiveBtnColor" format="reference" />
+    <attr name="homeActiveBtnColor" format="reference" />
+    <attr name="timerBackground" format="reference" />
+
+    <attr name="btn_cancel_color" format="reference" />
+    <attr name="btn_ok_color" format="reference" />
+    <attr name="alternate_by_theme" format="reference" />
+    <attr name="card_color" format="reference" />
+    <attr name="main_disable_text_color" format="reference" />
+
+
+    <declare-styleable name="Picker">
+        <attr name="offset" format="integer" />
+        <attr name="darkModeEnabled" format="boolean" />
+        <attr name="text_size_picker" format="integer" />
+        <attr name="selected_text_color" format="integer" />
+        <attr name="not_selected_text_color" format="integer" />
+        <attr name="line_background" format="integer" />
+        <attr name="pickerMode" format="enum">
+            <enum name="monthFirst" value="0" />
+            ....
+            <enum name="dayFirst" value="1" />
+        </attr>
+    </declare-styleable>
+
+</resources>
