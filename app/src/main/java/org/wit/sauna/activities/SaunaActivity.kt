@@ -17,6 +17,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.material.snackbar.Snackbar
@@ -28,6 +29,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
 import org.wit.sauna.R
+import org.wit.sauna.activities.map.Constants
 import org.wit.sauna.activities.map.MapActivity
 import org.wit.sauna.databinding.ActivitySaunaBinding
 import org.wit.sauna.main.MainApp
@@ -49,7 +51,8 @@ class SaunaActivity : AppCompatActivity() {
     val PICK_IMAGE = 1
     var storageReference: StorageReference? = null
     var pdd: ProgressDialog? = null
-
+    var lat : String = ""
+    var lng : String = ""
     var egle = false
 
     private lateinit var imageIntentLauncher : ActivityResultLauncher<Intent>
@@ -134,12 +137,26 @@ class SaunaActivity : AppCompatActivity() {
                                 dialog.setContentView(R.layout.prompt)
                                 val ok = dialog.findViewById<Button>(R.id.yes)
                                 val msg = dialog.findViewById<TextView>(R.id.textshow)
+                               if (Constants.location != null) {
+                                    LatLng(Constants.location!!.latitude, Constants.location!!.longitude)
+                                   lat = Constants.location!!.latitude.toString()
+                                   lng= Constants.location!!.longitude.toString()
+
+                                } else {
+                                    //To retrieve
+                                     lat =
+                                         Preferences.readString(this@SaunaActivity,"lat").toString() //0 is the default value
+                                     lng =
+                                         Preferences.readString(this@SaunaActivity,"lng").toString() //0 is the default value
+                                }
                                 if (egle) {
                                     val pd = setdata(
                                         binding.saunaTitle.text.toString(),
                                         uri.toString(),
                                         binding.description.text.toString(),
-                                        i
+                                        i,
+                                        lat,
+                                        lng
                                     )
                                     createpost.setValue(pd)
                                     createpostforalluser.setValue(pd)

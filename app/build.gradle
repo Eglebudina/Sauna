@@ -11,7 +11,7 @@ android {
 
     defaultConfig {
         applicationId "org.wit.sauna"
-        minSdk 30
+        minSdk 21
         targetSdk 31
         versionCode 1
         versionName "1.0"
@@ -38,7 +38,6 @@ android {
     dataBinding {
         enabled true
     }
-    namespace 'org.wit.sauna'
 }
 
 dependencies {

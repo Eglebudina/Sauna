@@ -67,7 +67,10 @@ class getpostdataforcategoriesforuser(context: Context, data: ArrayList<setdata>
     override fun getItemCount(): Int {
         return data.size
     }
-
+    fun mfilterList(filteredList: ArrayList<setdata>) {
+        data = filteredList
+        notifyDataSetChanged()
+    }
     inner class myHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var price1: TextView
         var cancelorder: TextView

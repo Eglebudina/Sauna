@@ -12,7 +12,8 @@
     <string name="change_sauna_image">Change sauna image</string>
     <string name="button_location">Set Location</string>
     <string name="title_activity_map">Map</string>
-    <string name="google_maps_key">AIzaSyCXhN6B7hHEYpjyP5xV0SrxJQWtOfXhV2o</string>
+<!--    <string name="google_maps_key">AIzaSyCXhN6B7hHEYpjyP5xV0SrxJQWtOfXhV2o</string>-->
+    <string name="google_maps_key">AIzaSyCASPP7vLUoQ12h-2OrZvH6JHUcrvGeSKs</string>
     <string name="profile">Profile</string>
     <string name="name">Name</string>>
 

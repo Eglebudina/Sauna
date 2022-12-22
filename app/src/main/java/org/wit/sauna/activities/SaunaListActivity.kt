@@ -21,16 +21,16 @@ import android.os.Handler
 import android.os.PersistableBundle
 import android.provider.MediaStore
 import android.provider.Settings
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.*
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.TooltipCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
@@ -39,6 +39,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
@@ -81,7 +82,11 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
     private val PERMISSION_REQUEST_CODE = 1
     var drawerToggle: ActionBarDrawerToggle? = null
     var name: String? = null
+    val filterArrayList: ArrayList<setdata> = ArrayList<setdata>()
+    var lat : String = ""
+    var lng : String = ""
     var url: String? = null
+    var themeset: Boolean? = true
     var fRef: DatabaseReference? = null
     var ref: DatabaseReference? = null
     var recyclerView: RecyclerView? = null
@@ -91,6 +96,7 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
     var edit = false
     var imgShow = false
     var egle = false
+    var searchUserOrder: EditText? = null
 
     var sauna = SaunaModel()
     var bitmap: Bitmap? = null
@@ -111,6 +117,7 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
 //        setContentView(binding.root)
         binding.toolbar.title = title
         myFirebase = FirebaseDatabase.getInstance().reference
+        searchUserOrder = findViewById(R.id.search_user_order_tv)
 
         recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         rep = Preferences.readString(this@SaunaListActivity, "email").toString()
@@ -185,11 +192,44 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
         registerRefreshCallback()
         checkInternet()
         registerMapCallback()
+        searchUserOrder!!.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+            override fun afterTextChanged(editable: Editable) {
+                if (editable.isEmpty()){
+                    postadapter!!.mfilterList(ad)
+                    return
+                }
+                filter(editable.toString())
+            }
+        })
 
     }
+    fun filter(text: String) {
+        filterArrayList.clear()
+        for (item in ad) {
+            try{
+
+//                Log.i("tariq", "filter:vcheck "+item.title +" des "+item.description+" txt "+text)
+
+                if (item.name!!.toLowerCase().contains(text.lowercase(Locale.getDefault())) || item.description!!.toLowerCase().contains(text.lowercase(Locale.getDefault()))) {
+                    filterArrayList.add(item)
+                }
+                postadapter!!.mfilterList(filterArrayList)
+
+            }
+            catch (e : Exception){
+//                Log.i("tariq", "filter: "+e)
+            }
+
+        }
+    }
+
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
+
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -239,6 +279,25 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
         if (id == R.id.nav_settings) {
             val intent = Intent(this, displayad::class.java)
             startActivity(intent)
+        }
+        if (id == R.id.nav_theme) {
+ /*           themeset = if(themeset == true){
+                setTheme(R.style.Theme_Sauna_Dark)
+        //                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                false
+            } else{
+                setTheme(R.style.Theme_Sauna)
+
+        //                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                true
+
+
+            }*/
+            setTheme(R.style.Theme_Sauna_Dark)
+
+            setContentView(R.layout.activity_sauna_list)
+            this@SaunaListActivity.recreate()
+
         }
         val drawer = findViewById<View>(R.id.drawerLayout) as DrawerLayout
         drawer.closeDrawer(GravityCompat.START)
@@ -493,19 +552,35 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
                                     .setBackgroundDrawableResource(android.R.color.transparent)
                                 dialog.setContentView(R.layout.prompt)
                                 val ok = dialog.findViewById<Button>(R.id.yes)
+                                if (Constants.location != null) {
+                                    LatLng(Constants.location!!.latitude, Constants.location!!.longitude)
+                                    lat = Constants.location!!.latitude.toString()
+                                    lng= Constants.location!!.longitude.toString()
+
+                                } else {
+                                    //To retrieve
+                                    lat =
+                                        Preferences.readString(this@SaunaListActivity,"lat").toString() //0 is the default value
+                                    lng =
+                                        Preferences.readString(this@SaunaListActivity,"lng").toString() //0 is the default value
+                                }
                                 val msg = dialog.findViewById<TextView>(R.id.textshow)
                                 if (egle) {
                                     val map = HashMap<String, Any>()
                                     map["description"] =  bind.description.text.toString()
                                     map["name"] =  bind.saunaTitle.text.toString()
                                     map["randomkey"] = uri.toString()
+                                    map["lat"] = lat
+                                    map["lng"] = lng
                                     createpost.updateChildren(map)
                                     createpostforalluser.updateChildren(map)
                                     egle = false
                                 }
                                 msg.text = "Data inserted Successfully"
                                 //                                                    egle = true;
-                                ok.setOnClickListener { dialog.dismiss() }
+                                ok.setOnClickListener {
+                                    alertDialog.dismiss()
+                                    dialog.dismiss() }
                                 dialog.show()
                             }
 
