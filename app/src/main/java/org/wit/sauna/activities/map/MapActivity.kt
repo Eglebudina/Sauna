@@ -25,7 +25,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
-        location = intent.extras?.getParcelable<Location>("location")!!
+        location = intent.extras?.getParcelable("location")!!
         val mapFragment = supportFragmentManager
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -43,6 +43,18 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback,
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, location.zoom))
         map.setOnMarkerDragListener(this)
         map.setOnMarkerClickListener(this)
+        map.setOnMapClickListener {
+            location.lat = it.latitude
+            location.lng = it.longitude
+            location.zoom = map.cameraPosition.zoom
+            map.clear()
+            val options = MarkerOptions()
+                .title("Sauna")
+                .snippet("GPS : $it")
+                .draggable(true)
+                .position(it)
+            map.addMarker(options)
+        }
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
@@ -52,9 +64,12 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback,
     }
 
     override fun onMarkerDragStart(marker: Marker) {
+
     }
 
     override fun onMarkerDrag(marker: Marker) {
+        // drag marker
+
     }
 
     override fun onMarkerDragEnd(marker: Marker) {

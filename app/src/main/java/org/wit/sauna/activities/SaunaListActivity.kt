@@ -96,7 +96,7 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
     var edit = false
     var imgShow = false
     var egle = false
-    var searchUserOrder: EditText? = null
+    var searchUserOrder: androidx.appcompat.widget.SearchView? = null
 
     var sauna = SaunaModel()
     var bitmap: Bitmap? = null
@@ -139,10 +139,10 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
                 override fun onDataChange(snapshot: DataSnapshot) {
                     url = snapshot.child("url").getValue(String::class.java)
                     name = snapshot.child("name").getValue(String::class.java)
-                    if (url!!.isNotEmpty()) {
+                    if (url != null) {
                         Picasso.get().load(url).into(headerBinding.imageView)
                     }
-                    if (name!!.isNotEmpty()) {
+                    if (name != null) {
                         headerBinding.tvEmpName.text = name
                     }
                     headerBinding.tvEmpType.text = rep
@@ -192,17 +192,32 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
         registerRefreshCallback()
         checkInternet()
         registerMapCallback()
-        searchUserOrder!!.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
-            override fun afterTextChanged(editable: Editable) {
-                if (editable.isEmpty()){
-                    postadapter!!.mfilterList(ad)
-                    return
-                }
-                filter(editable.toString())
+        searchUserOrder!!.setOnQueryTextListener( object : SearchView.OnQueryTextListener,
+            androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
             }
-        })
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText != null) {
+                    if (newText.isEmpty()){
+                        postadapter!!.mfilterList(ad)
+                        return false
+                    }
+                }
+                filter(newText.toString())
+                return false
+
+        }})
+
+
+//            object : TextWatcher {
+//            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+//            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+//            override fun afterTextChanged(editable: Editable) {
+//
+//            }
+//        })
 
     }
     fun filter(text: String) {
@@ -210,7 +225,7 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
         for (item in ad) {
             try{
 
-//                Log.i("cat", "filter:vcheck "+item.title +" des "+item.description+" txt "+text)
+//                Log.i("tariq", "filter:vcheck "+item.title +" des "+item.description+" txt "+text)
 
                 if (item.name!!.toLowerCase().contains(text.lowercase(Locale.getDefault())) || item.description!!.toLowerCase().contains(text.lowercase(Locale.getDefault()))) {
                     filterArrayList.add(item)
@@ -219,7 +234,7 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
 
             }
             catch (e : Exception){
-//                Log.i("cat", "filter: "+e)
+//                Log.i("tariq", "filter: "+e)
             }
 
         }
@@ -293,7 +308,7 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
 
 
             }*/
-            setTheme(R.style.Theme_Sauna_Dark)
+            setTheme(R.style.Theme_Sauna)
 
             setContentView(R.layout.activity_sauna_list)
             this@SaunaListActivity.recreate()
@@ -656,7 +671,7 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
                 when (result.resultCode) {
                     RESULT_OK -> {
                         if (result.data != null) {
-                            Timber.i("Got Location ${result.data.toString()}")
+                            Timber.i("Got Location1 ${result.data.toString()}")
                             location = result.data!!.extras?.getParcelable("location")!!
                             Timber.i("Location == $location")
                             sauna.lat = location.lat

@@ -139,8 +139,8 @@ class SaunaActivity : AppCompatActivity() {
                                 val msg = dialog.findViewById<TextView>(R.id.textshow)
                                if (Constants.location != null) {
                                     LatLng(Constants.location!!.latitude, Constants.location!!.longitude)
-                                   lat = Constants.location!!.latitude.toString()
-                                   lng= Constants.location!!.longitude.toString()
+                                   lat = sauna.lat.toString()
+                                   lng= sauna.lng.toString()
 
                                 } else {
                                     //To retrieve
@@ -297,5 +297,20 @@ class SaunaActivity : AppCompatActivity() {
                 e.printStackTrace()
             }
         }
+//        when (resultCode) {
+//            RESULT_OK -> {
+//                if (data != null) {
+//                    if (data.data != null) {
+//                        i("Got Location ${data.data.toString()}")
+//                        location = data.extras?.getParcelable("location")!!
+//                        i("Location == $location")
+//                        sauna.lat = location.lat
+//                        sauna.lng = location.lng
+//                        sauna.zoom = location.zoom
+//                    }
+//                } // end of if
+//            }
+//            RESULT_CANCELED -> { } else -> { }
+//        }
     }
 }

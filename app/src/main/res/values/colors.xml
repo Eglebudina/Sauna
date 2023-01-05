@@ -7,6 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="background">#FFFFFF</color>
 
     <color name="colorPrimary">#FFFFFF</color>
     <color name="colorPrimaryDark">#74A0C1</color>
@@ -54,5 +55,8 @@
     <color name="main_disable_text_color_light">#3E5886</color>
 
     <color name="progress_bar_bg">#999999</color>
+
+    <color name="gradient_start">#74588BF4</color>
+    <color name="gradient_end">#74A0C1</color>
 
 </resources>

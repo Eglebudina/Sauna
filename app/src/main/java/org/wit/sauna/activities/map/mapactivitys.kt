@@ -113,14 +113,15 @@ class mapactivitys : AppCompatActivity() {
             override fun onDataChange(snapshot: DataSnapshot) {
                 ad.clear()
                 for (petdatasnap in snapshot.children) {
-                    for (lastsnapshot in petdatasnap.children) {
-                        val petData: setdata? = lastsnapshot.getValue(setdata::class.java)
+//                    for (lastsnapshot in petdatasnap.children) {
+                    Log.i("TAG", "onDataChange: " + petdatasnap.value)
+                        val petData: setdata? = petdatasnap.getValue(setdata::class.java)
                         if (petData != null) {
                             ad.add(petData)
 
                         }
                         /*               for (hopelast in lastsnapshot.children){
-                                           Log.i("cat", "check snap : "+hopelast)
+                                           Log.i("tariq", "check snap : "+hopelast)
 
                                     *//*       val petData: setdata? = petdatasnap.getValue(setdata::class.java)
                             if (petData != null) {
@@ -128,11 +129,11 @@ class mapactivitys : AppCompatActivity() {
                             }*//*
                         }
 */
-                    }
+//                    }
 
                 }
                 for (i in 0 until ad.size) {
-                    Log.i("cat", "onResume: " + ad[i].lat!!.toDouble())
+                    Log.i("tariq", "onResume: " + ad[i].lat!!.toDouble())
                     val ll = LatLng(ad[i].lat!!.toDouble(), ad[i].lng!!.toDouble())
                 }
                 // lets place some 5 markers
@@ -150,7 +151,7 @@ class mapactivitys : AppCompatActivity() {
                         BitmapDescriptorFactory
                             .defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
                     )*/
-                    Glide.with(this@mapactivitys)
+                    Glide.with(applicationContext)
                         .asBitmap()
                         .load(ad.get(i).randomkey)
                         .into(object : CustomTarget<Bitmap>(), GoogleMap.OnMarkerClickListener {
@@ -279,17 +280,16 @@ class mapactivitys : AppCompatActivity() {
 
     override fun onResume() {
         Handler().postDelayed({
-            Log.i("cat", "onResume: delay ")
+            Log.i("tariq", "onResume: delay ")
 
             for (i in 0 until ad.size) {
                 BitmapDescriptorFactory.defaultMarker(Random().nextInt(360).toFloat())
-
-
+                Log.i("tariq", "onResume: ad ${ad[i].lat}  ${ad[i].lng}  ${ad[i].name}  ${ad[i].randomkey}")
                 // Adding a marker
                 val marker = MarkerOptions().position(
-                    LatLng(ad.get(i).lat!!.toDouble(), ad.get(i).lng!!.toDouble())
+                    LatLng(ad[i].lat!!.toDouble(), ad[i].lng!!.toDouble())
                 )
-                    .title("Its  ${ad.get(i).name}")
+                    .title("Its  ${ad[i].name}")
                 marker.icon(
                     BitmapDescriptorFactory
                         .defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
@@ -332,7 +332,7 @@ class mapactivitys : AppCompatActivity() {
             /*         if (ad.isNotEmpty()){
                      }
                      else{
-                         Log.i("cat", "onResume: empty ")
+                         Log.i("tariq", "onResume: empty ")
 
                      }  */
         }, 5000)

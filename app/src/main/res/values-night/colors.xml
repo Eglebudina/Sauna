@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#0B3A83</color>
     <color name="purple_700">#FF3700B3</color>
@@ -7,10 +8,11 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="background">#000000</color>
 
-    <color name="colorPrimary">#FFFFFF</color>
-    <color name="colorPrimaryDark">#74A0C1</color>
-    <color name="colorAccent">#74A0C1</color>
+    <color name="colorPrimary">#000000</color>
+    <color name="colorPrimaryDark">#152633</color>
+    <color name="colorAccent">#2C848F</color>
     <color name="bright_green">#81EB14</color>
     <color name="lesser_green">#9AEF43</color>
     <color name="light_200">#74A0C1</color>
@@ -54,5 +56,8 @@
     <color name="main_disable_text_color_light">#3E5886</color>
 
     <color name="progress_bar_bg">#999999</color>
+
+    <color name="gradient_start">#232323</color>
+    <color name="gradient_end">#3A3A3A</color>
 
 </resources>

@@ -4,16 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/roundbtngradiennocorners"
-    >
+    android:background="@drawable/roundbtngradiennocorners">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Login"
-        android:textStyle="bold"
         android:textColor="#000"
         android:textSize="@dimen/_40sdp"
+        android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -41,10 +40,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="@dimen/_40sdp"
-            android:layout_marginTop="@dimen/_15sdp"
-            android:layout_marginRight="@dimen/_10sdp"
+            android:layout_margin="20dp"
             android:background="#fff"
+            android:layout_gravity="center"
             android:orientation="vertical">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -63,6 +61,7 @@
                 app:layout_constraintHorizontal_bias="0.502"
                 app:layout_constraintTop_toBottomOf="@+id/logo"
                 app:layout_constraintVertical_bias="0.138" />
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/email"
                 android:layout_width="match_parent"
@@ -104,9 +103,9 @@
                     android:layout_weight="1"
 
                     android:backgroundTint="#E3E3E3"
-                    android:drawablePadding="@dimen/_10sdp"
-
                     android:drawableStart="@drawable/ic_baseline_lock_24"
+
+                    android:drawablePadding="@dimen/_10sdp"
                     android:hint="Password"
                     android:inputType="textPassword"
                     android:textColor="#000000" />
@@ -115,16 +114,16 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_weight="2"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_weight="2">
 
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_weight="1"
                     android:id="@+id/changeact"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_weight="1"
                     android:text="doesn't have account?"
                     android:textColor="#776D6D"
                     android:textSize="@dimen/_10sdp"
@@ -137,36 +136,38 @@
                 </TextView>
 
                 <CheckBox
-                    android:textColor="#776D6D"
-                    android:buttonTint="#0B3A83"
-
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:layout_weight="1"
                     android:id="@+id/checkBox"
                     android:layout_width="@dimen/_130sdp"
+
                     android:layout_height="@dimen/_30sdp"
-                    android:text="Remember password" />
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_weight="1"
+                    android:buttonTint="#0B3A83"
+                    android:text="Remember password"
+                    android:textColor="#776D6D" />
             </LinearLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
                 <TextView
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/_10sdp"
+                    android:gravity="center"
                     android:text="Or"
                     android:textColor="@color/black"
-                    android:textStyle="bold"
-                    android:gravity="center"
-                    android:layout_margin="@dimen/_10sdp"
-                    android:layout_height="wrap_content">
-                </TextView>
+                    android:textStyle="bold"></TextView>
+
                 <com.google.android.gms.common.SignInButton
                     android:id="@+id/signUpgoogle"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"
-                    android:text="Text"
-                    android:layout_margin="@dimen/_10sdp"
                     android:layout_alignParentTop="true"
+                    android:layout_margin="@dimen/_10sdp"
+                    android:text="Text"
                     android:textSize="18sp" />
 
             </LinearLayout>
@@ -193,23 +194,21 @@
         app:layout_constraintVertical_bias="0.13999999" />
 
 
-
     <LinearLayout
         android:id="@+id/progress_bar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#B0000000"
+        android:gravity="center"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        android:gravity="center"
-        android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
-        >
+        app:layout_constraintTop_toTopOf="parent">
+
         <ProgressBar
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            />
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 
