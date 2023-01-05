@@ -210,7 +210,7 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
         for (item in ad) {
             try{
 
-//                Log.i("tariq", "filter:vcheck "+item.title +" des "+item.description+" txt "+text)
+//                Log.i("cat", "filter:vcheck "+item.title +" des "+item.description+" txt "+text)
 
                 if (item.name!!.toLowerCase().contains(text.lowercase(Locale.getDefault())) || item.description!!.toLowerCase().contains(text.lowercase(Locale.getDefault()))) {
                     filterArrayList.add(item)
@@ -219,7 +219,7 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
 
             }
             catch (e : Exception){
-//                Log.i("tariq", "filter: "+e)
+//                Log.i("cat", "filter: "+e)
             }
 
         }

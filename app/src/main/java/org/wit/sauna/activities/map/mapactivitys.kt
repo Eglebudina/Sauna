@@ -120,7 +120,7 @@ class mapactivitys : AppCompatActivity() {
 
                         }
                         /*               for (hopelast in lastsnapshot.children){
-                                           Log.i("tariq", "check snap : "+hopelast)
+                                           Log.i("cat", "check snap : "+hopelast)
 
                                     *//*       val petData: setdata? = petdatasnap.getValue(setdata::class.java)
                             if (petData != null) {
@@ -132,7 +132,7 @@ class mapactivitys : AppCompatActivity() {
 
                 }
                 for (i in 0 until ad.size) {
-                    Log.i("tariq", "onResume: " + ad[i].lat!!.toDouble())
+                    Log.i("cat", "onResume: " + ad[i].lat!!.toDouble())
                     val ll = LatLng(ad[i].lat!!.toDouble(), ad[i].lng!!.toDouble())
                 }
                 // lets place some 5 markers
@@ -279,7 +279,7 @@ class mapactivitys : AppCompatActivity() {
 
     override fun onResume() {
         Handler().postDelayed({
-            Log.i("tariq", "onResume: delay ")
+            Log.i("cat", "onResume: delay ")
 
             for (i in 0 until ad.size) {
                 BitmapDescriptorFactory.defaultMarker(Random().nextInt(360).toFloat())
@@ -332,7 +332,7 @@ class mapactivitys : AppCompatActivity() {
             /*         if (ad.isNotEmpty()){
                      }
                      else{
-                         Log.i("tariq", "onResume: empty ")
+                         Log.i("cat", "onResume: empty ")
 
                      }  */
         }, 5000)
