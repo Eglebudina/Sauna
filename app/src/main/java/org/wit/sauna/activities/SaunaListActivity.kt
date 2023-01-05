@@ -79,12 +79,13 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
     private lateinit var refreshIntentLauncher: ActivityResultLauncher<Intent>
     var drawerLayout: DrawerLayout? = null
     var btntogle: ImageView? = null
+    var imagePicked: ImageView? = null
     private val PERMISSION_REQUEST_CODE = 1
     var drawerToggle: ActionBarDrawerToggle? = null
     var name: String? = null
     val filterArrayList: ArrayList<setdata> = ArrayList<setdata>()
-    var lat : String = ""
-    var lng : String = ""
+    var lat: String = ""
+    var lng: String = ""
     var url: String? = null
     var themeset: Boolean? = true
     var fRef: DatabaseReference? = null
@@ -133,7 +134,7 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
         btntogle = findViewById<ImageView>(R.id.btnToggle)
         btntogle!!.setOnClickListener(View.OnClickListener {
             //loading picture, name and email in drawer layout
-            val a = rep!!.replace(".", "")
+            val a = rep.replace(".", "")
             fRef = ref!!.child("users").child(a)
             fRef!!.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -192,7 +193,7 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
         registerRefreshCallback()
         checkInternet()
         registerMapCallback()
-        searchUserOrder!!.setOnQueryTextListener( object : SearchView.OnQueryTextListener,
+        searchUserOrder!!.setOnQueryTextListener(object : SearchView.OnQueryTextListener,
             androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
@@ -200,7 +201,7 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (newText != null) {
-                    if (newText.isEmpty()){
+                    if (newText.isEmpty()) {
                         postadapter!!.mfilterList(ad)
                         return false
                     }
@@ -208,7 +209,8 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
                 filter(newText.toString())
                 return false
 
-        }})
+            }
+        })
 
 
 //            object : TextWatcher {
@@ -220,26 +222,28 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
 //        })
 
     }
+
     fun filter(text: String) {
         filterArrayList.clear()
         for (item in ad) {
-            try{
+            try {
 
 //                Log.i("tariq", "filter:vcheck "+item.title +" des "+item.description+" txt "+text)
 
-                if (item.name!!.toLowerCase().contains(text.lowercase(Locale.getDefault())) || item.description!!.toLowerCase().contains(text.lowercase(Locale.getDefault()))) {
+                if (item.name!!.toLowerCase()
+                        .contains(text.lowercase(Locale.getDefault())) || item.description!!.toLowerCase()
+                        .contains(text.lowercase(Locale.getDefault()))
+                ) {
                     filterArrayList.add(item)
                 }
                 postadapter!!.mfilterList(filterArrayList)
 
-            }
-            catch (e : Exception){
+            } catch (e: Exception) {
 //                Log.i("tariq", "filter: "+e)
             }
 
         }
     }
-
 
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -296,18 +300,18 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
             startActivity(intent)
         }
         if (id == R.id.nav_theme) {
- /*           themeset = if(themeset == true){
-                setTheme(R.style.Theme_Sauna_Dark)
-        //                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-                false
-            } else{
-                setTheme(R.style.Theme_Sauna)
+            /*           themeset = if(themeset == true){
+                           setTheme(R.style.Theme_Sauna_Dark)
+                   //                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                           false
+                       } else{
+                           setTheme(R.style.Theme_Sauna)
 
-        //                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-                true
+                   //                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+                           true
 
 
-            }*/
+                       }*/
             setTheme(R.style.Theme_Sauna)
 
             setContentView(R.layout.activity_sauna_list)
@@ -404,6 +408,9 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
                     "Image has been selected",
                     Toast.LENGTH_SHORT
                 ).show()
+                if (imagePicked != null) {
+                    imagePicked!!.setImageBitmap(bitmap)
+                }
             } catch (e: IOException) {
                 e.printStackTrace()
             }
@@ -507,23 +514,27 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
 
     override fun update(model: setdata?) {
         var btnAdd: Button
-       var getToPoint : String
-       getToPoint = model!!.count.toString()
+        var getToPoint: String
+        getToPoint = model!!.count.toString()
 //        btnAdd = view.findViewById(R.id.btnAdd)
         storageReference = FirebaseStorage.getInstance().reference
 
         Toast.makeText(this, "work successfully", Toast.LENGTH_SHORT).show()
         val alert = AlertDialog.Builder(this)
 //        var binding: ActivitySaunaBinding = ActivitySaunaBinding.inflate(layoutInflater)
-        val bind: ActivitySaunaBinding = ActivitySaunaBinding.inflate(LayoutInflater.from(this@SaunaListActivity))
+        val bind: ActivitySaunaBinding =
+            ActivitySaunaBinding.inflate(LayoutInflater.from(this@SaunaListActivity))
 //        var binding: ActivitySaunaBinding = ActivitySaunaBinding.inflate(LayoutInflater.from(this@SaunaListActivity), R.layout. activity_sauna, null, false)
 
         setContentView(binding.root)
-   /*     val inflater = LayoutInflater.from(this)
-        val view: View = inflater.inflate(R.layout.activity_sauna, null)*/
+        /*     val inflater = LayoutInflater.from(this)
+             val view: View = inflater.inflate(R.layout.activity_sauna, null)*/
         alert.setView(bind.root)
         val alertDialog: AlertDialog = alert.create()
         alertDialog.setCanceledOnTouchOutside(true)
+
+        imagePicked = bind.saunaImage
+
         if (intent.hasExtra("sauna_edit")) {
             edit = true
             sauna = intent.extras?.getParcelable("sauna_edit")!!
@@ -537,6 +548,18 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
                 bind.chooseImage.setText(R.string.change_sauna_image)
             }
         }
+        //if (intent.hasExtra("sauna_edit")) {
+        bind.saunaTitle.setText(model.name)
+        bind.description.setText(model.description)
+        bind.btnAdd.setText(R.string.save_sauna)
+//        Picasso.get()
+//            .load(model.randomkey)
+//            .into(bind.saunaImage)
+//        selectedImage = Uri.parse(model.randomkey)
+        // if (sauna.image != Uri.EMPTY) {
+        bind.chooseImage.setText(R.string.change_sauna_image)
+        // }
+        //}
 
 
         bind.btnAdd.setOnClickListener(View.OnClickListener {
@@ -546,9 +569,11 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
 
             val rep2 = rep!!.replace(".", "")
             val createpost =
-                FirebaseDatabase.getInstance().reference.child("create").child("post").child(rep2).child(getToPoint)
+                FirebaseDatabase.getInstance().reference.child("create").child("post").child(rep2)
+                    .child(getToPoint)
             val createpostforalluser =
-                FirebaseDatabase.getInstance().reference.child("create").child("posts").child("all").child(getToPoint)
+                FirebaseDatabase.getInstance().reference.child("create").child("posts").child("all")
+                    .child(getToPoint)
             if (bind.saunaTitle.text.toString()
                     .isNotEmpty() && bind.description.text.toString()
                     .isNotEmpty() && selectedImage != null
@@ -568,22 +593,27 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
                                 dialog.setContentView(R.layout.prompt)
                                 val ok = dialog.findViewById<Button>(R.id.yes)
                                 if (Constants.location != null) {
-                                    LatLng(Constants.location!!.latitude, Constants.location!!.longitude)
-                                    lat = Constants.location!!.latitude.toString()
-                                    lng= Constants.location!!.longitude.toString()
-
+                                    val location = org.wit.sauna.models.Location(model.lat?.toDouble() ?: sauna.lat, model.lng?.toDouble() ?: sauna.lng, 15f)
+                                    if (sauna.zoom != 0f) {
+                                        location.lat = sauna.lat
+                                        location.lng = sauna.lng
+                                    }
+                                    lat = location.lat.toString()
+                                    lng = location.lng.toString()
                                 } else {
                                     //To retrieve
                                     lat =
-                                        Preferences.readString(this@SaunaListActivity,"lat").toString() //0 is the default value
+                                        Preferences.readString(this@SaunaListActivity, "lat")
+                                            .toString() //0 is the default value
                                     lng =
-                                        Preferences.readString(this@SaunaListActivity,"lng").toString() //0 is the default value
+                                        Preferences.readString(this@SaunaListActivity, "lng")
+                                            .toString() //0 is the default value
                                 }
                                 val msg = dialog.findViewById<TextView>(R.id.textshow)
                                 if (egle) {
                                     val map = HashMap<String, Any>()
-                                    map["description"] =  bind.description.text.toString()
-                                    map["name"] =  bind.saunaTitle.text.toString()
+                                    map["description"] = bind.description.text.toString()
+                                    map["name"] = bind.saunaTitle.text.toString()
                                     map["randomkey"] = uri.toString()
                                     map["lat"] = lat
                                     map["lng"] = lng
@@ -595,7 +625,8 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
                                 //                                                    egle = true;
                                 ok.setOnClickListener {
                                     alertDialog.dismiss()
-                                    dialog.dismiss() }
+                                    dialog.dismiss()
+                                }
                                 dialog.show()
                             }
 
@@ -637,7 +668,7 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
             }
         })
         bind.saunaLocation.setOnClickListener {
-            val location = org.wit.sauna.models.Location(52.245696, -7.139102, 15f)
+            val location = org.wit.sauna.models.Location(model.lat?.toDouble() ?: sauna.lat, model.lng?.toDouble() ?: sauna.lng, 15f)
             if (sauna.zoom != 0f) {
                 location.lat = sauna.lat
                 location.lng = sauna.lng
@@ -653,11 +684,13 @@ class SaunaListActivity : AppCompatActivity(), SaunaListener, MyInterface,
             val i = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
             startActivityForResult(i, PICK_IMAGE)
         })
-        if (imgShow) {
-            bind.saunaImage.setImageBitmap(bitmap)
-            imgShow = false
-        }
-
+        // delay
+        Handler().postDelayed({
+            if (imgShow) {
+                bind.saunaImage.setImageBitmap(bitmap)
+                imgShow = false
+            }
+        }, 1000)
 
 
         alertDialog.show()

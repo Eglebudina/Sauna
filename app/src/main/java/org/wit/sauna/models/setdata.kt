@@ -20,7 +20,7 @@ class setdata {
         lng: String?
     ) {
         this.name = name
-        randomkey = key
+        this.randomkey = key
         this.description = act
         this.count = count
         this.lat = lat

@@ -111,26 +111,16 @@ class mapactivitys : AppCompatActivity() {
         fRef!!.addValueEventListener(object : ValueEventListener {
             @SuppressLint("LogNotTimber")
             override fun onDataChange(snapshot: DataSnapshot) {
-                ad.clear()
+                //ad.clear()
                 for (petdatasnap in snapshot.children) {
-//                    for (lastsnapshot in petdatasnap.children) {
-                    Log.i("TAG", "onDataChange: " + petdatasnap.value)
-                        val petData: setdata? = petdatasnap.getValue(setdata::class.java)
+                    for (lastsnapshot in petdatasnap.children) {
+                        Log.i("TAG", "onDataChange: " + lastsnapshot.value)
+                        val petData: setdata? = lastsnapshot.getValue(setdata::class.java)
                         if (petData != null) {
                             ad.add(petData)
-
+                            Log.i("TAG", "add Data: " + petData.name + " " + petData.lng)
                         }
-                        /*               for (hopelast in lastsnapshot.children){
-                                           Log.i("tariq", "check snap : "+hopelast)
-
-                                    *//*       val petData: setdata? = petdatasnap.getValue(setdata::class.java)
-                            if (petData != null) {
-                                ad.add(petData)
-                            }*//*
-                        }
-*/
-//                    }
-
+                    }
                 }
                 for (i in 0 until ad.size) {
                     Log.i("tariq", "onResume: " + ad[i].lat!!.toDouble())
@@ -139,35 +129,63 @@ class mapactivitys : AppCompatActivity() {
                 // lets place some 5 markers
                 // lets place some 5 markers
                 for (i in 0 until ad.size) {
-          /*          BitmapDescriptorFactory.defaultMarker(Random().nextInt(360).toFloat())
-
+                    //BitmapDescriptorFactory.defaultMarker(Random().nextInt(360).toFloat())
+                    googleMap!!.addMarker(
+                        MarkerOptions().position(
+                            LatLng(
+                                ad[i].lat!!.toDouble(),
+                                ad[i].lng!!.toDouble()
+                            )
+                        ).title(ad[i].title).icon(
+                            BitmapDescriptorFactory.defaultMarker(
+                                Random().nextInt(360).toFloat()
+                            )
+                        )
+                    )
 
                     // Adding a marker
                     val marker = MarkerOptions().position(
-                        LatLng(ad.get(i).lat!!.toDouble(), ad.get(i).lng!!.toDouble())
+                        LatLng(ad[i].lat!!.toDouble(), ad[i].lng!!.toDouble())
                     )
-                        .title("Its  ${ad.get(i).name}")
+                        .title("Its  ${ad[i].name}")
                     marker.icon(
                         BitmapDescriptorFactory
                             .defaultMarker(BitmapDescriptorFactory.HUE_AZURE)
-                    )*/
+                    )
+                    googleMap!!.addMarker(marker)
+
                     Glide.with(applicationContext)
                         .asBitmap()
-                        .load(ad.get(i).randomkey)
+                        .load(ad[i].randomkey)
                         .into(object : CustomTarget<Bitmap>(), GoogleMap.OnMarkerClickListener {
-                            override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                            override fun onResourceReady(
+                                resource: Bitmap,
+                                transition: Transition<in Bitmap>?
+                            ) {
 
-                                bitmapFinal = createUserBitmapFinal(resource)  //here we will insert the bitmap we got with the link in a placehold with white border.
+                                bitmapFinal =
+                                    createUserBitmapFinal(resource)  //here we will insert the bitmap we got with the link in a placehold with white border.
 
-                                val mark1 = googleMap!!.addMarker(MarkerOptions().position(LatLng(ad.get(i).lat!!.toDouble(), ad.get(i).lng!!.toDouble())).title("Its  ${ad.get(i).name}").icon(BitmapDescriptorFactory.fromBitmap(
-                                    bitmapFinal!!
-                                )))
+                                val mark1 = googleMap!!.addMarker(
+                                    MarkerOptions().position(
+                                        LatLng(
+                                            ad[i].lat!!.toDouble(),
+                                            ad[i].lng!!.toDouble()
+                                        )
+                                    ).title("Its  ${ad.get(i).name}").icon(
+                                        BitmapDescriptorFactory.fromBitmap(
+                                            bitmapFinal!!
+                                        )
+                                    )
+                                )
 
-                                mark1!!.tag=0
+                                mark1!!.tag = 0
+                                Log.d("TAG", "onResourceReady: " + mark1.tag)
 
 //                                googleMap!!.setOnMarkerClickListener (this)
 
                             }
+
                             override fun onLoadCleared(placeholder: Drawable?) {
                                 // this is called when imageView is cleared on lifecycle call or for
                                 // some other reason.
@@ -279,12 +297,20 @@ class mapactivitys : AppCompatActivity() {
     }
 
     override fun onResume() {
+        super.onResume()
+        updateMarkers()
+    }
+
+    private fun updateMarkers() {
         Handler().postDelayed({
             Log.i("tariq", "onResume: delay ")
 
             for (i in 0 until ad.size) {
                 BitmapDescriptorFactory.defaultMarker(Random().nextInt(360).toFloat())
-                Log.i("tariq", "onResume: ad ${ad[i].lat}  ${ad[i].lng}  ${ad[i].name}  ${ad[i].randomkey}")
+                Log.i(
+                    "tariq",
+                    "onResume: ad ${ad[i].lat}  ${ad[i].lng}  ${ad[i].name}  ${ad[i].randomkey}"
+                )
                 // Adding a marker
                 val marker = MarkerOptions().position(
                     LatLng(ad[i].lat!!.toDouble(), ad[i].lng!!.toDouble())
@@ -336,8 +362,6 @@ class mapactivitys : AppCompatActivity() {
 
                      }  */
         }, 5000)
-
-        super.onResume()
     }
 
 
